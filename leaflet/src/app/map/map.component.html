@@ -1,0 +1,36 @@
+<div class="map-container">
+  <div class="map-frame">
+    <div id="map"></div>
+  </div>
+</div>
+
+<div class="map-control">
+  <div class="flex">
+    <label>Zoom Level:</label>
+    <input type="number"
+           max="12"
+           min="2"
+           [value]="zoom"
+           (change)="setZoom($event.target.value)">
+  </div>
+  <div class="flex">
+    <label>Center Lat:</label>
+    <input type="number"
+           max="90"
+           min="-90"
+           [value]="lat"
+           (change)="setLat($event.target.value)">
+  </div>
+  <div class="flex">
+    <label>Center Lng:</label>
+    <input type="number"
+           max="180"
+           min="-180"
+           [value]="lng"
+           (change)="setLng($event.target.value)">
+  </div>
+  <div class="flex">
+    <label>Reset:</label>
+    <button (click)="reset()">Reset</button>
+  </div>
+</div>
