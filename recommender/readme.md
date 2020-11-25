@@ -1,5 +1,7 @@
 # recommender
 
+From tutorial: [https://www.kaggle.com/ibtesama/getting-started-with-a-movie-recommendation-system](https://www.kaggle.com/ibtesama/getting-started-with-a-movie-recommendation-system)
+
 ## cmd
 
 ```sh
