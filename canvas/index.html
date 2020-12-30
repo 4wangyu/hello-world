@@ -29,6 +29,9 @@
         const canvas = window.c;
         const context = canvas.getContext('2d');
 
+        const bird = new Image();
+    bird.src = "bird.png";
+
         const canvasLength = 401;
         canvas.width = canvas.height = canvasLength;
 
@@ -88,8 +91,7 @@
           }
 
           // bird
-          fillStyle('#f1ea24');
-          fillRect(0, yPos, birdLen, birdLen);
+          context.drawImage(bird, 0, yPos, birdLen * (524/374), birdLen);
         }, refreshInterval);
       }
     </script>
