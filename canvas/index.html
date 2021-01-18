@@ -3,97 +3,16 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Flappy Bird</title>
-
+    <title>made with canvas</title>
     <style>
-      html {
-        height: 100%;
-      }
-
-      body {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100%;
-        margin: unset;
-        background: beige;
+      a {
+        display: block;
+        font-size: 8rem;
       }
     </style>
   </head>
-
-  <body onload="flap()">
-    <canvas id="c"></canvas>
-
-    <script>
-      function flap() {
-        const canvas = window.c;
-        const context = canvas.getContext('2d');
-
-        const bird = new Image();
-    bird.src = "bird.png";
-
-        const canvasLength = 401;
-        canvas.width = canvas.height = canvasLength;
-
-        const fillRect = context.fillRect.bind(context);
-        const fillStyle = (color) => (context.fillStyle = color);
-
-        const gapWidth = 200;
-        const blockWidth = 50;
-        const birdLen = 24;
-        const refreshInterval = 24;
-
-        let jumpHeight = 0;
-        let score = 0;
-        let yPos = 200;
-        let blockToLeft;
-        let topBlockLength;
-
-        window.onclick = () => (jumpHeight = 9);
-
-        setInterval(() => {
-          if (!blockToLeft) {
-            blockToLeft = canvasLength;
-            topBlockLength = gapWidth * Math.random();
-          }
-
-          // background
-          fillStyle('#6dbfc9');
-          fillRect(0, 0, canvasLength, canvasLength);
-
-          yPos -= jumpHeight -= 0.5;
-          blockToLeft -= 8;
-
-          // blocks
-          fillStyle('#99e057');
-          fillRect(blockToLeft, 0, blockWidth, topBlockLength);
-          fillRect(
-            blockToLeft,
-            topBlockLength + gapWidth,
-            blockWidth,
-            canvasLength
-          );
-
-          if (blockToLeft < -blockWidth) {
-            blockToLeft = 0;
-          }
-
-          if (
-            ((yPos < topBlockLength || yPos > topBlockLength + gapWidth) &&
-              blockToLeft < birdLen) ||
-            yPos > canvasLength
-          ) {
-            jumpHeight = score = blockToLeft = 0;
-            yPos = gapWidth;
-          } else {
-            fillStyle('#fff');
-            context.fillText(score++, 10, birdLen);
-          }
-
-          // bird
-          context.drawImage(bird, 0, yPos, birdLen * (524/374), birdLen);
-        }, refreshInterval);
-      }
-    </script>
+  <body>
+    <a href="/bird.html">flappy bird</a>
+    <a href="/draw.html">drawing app</a>
   </body>
 </html>

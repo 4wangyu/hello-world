@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>draw</title>
+  </head>
+  <body>
+    <canvas id="c"></canvas>
+
+    <script>
+      document.body.style.margin = 0;
+
+      const canvas = window.c;
+      const context = canvas.getContext`2d`;
+
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      context.lineWidth = 2;
+      let count = 0;
+
+      document.onpointerdown = (e) => {
+        count = e.pointerId + 1;
+        e.preventDefault();
+        context.beginPath();
+        context.moveTo(e.x, e.y);
+      };
+
+      document.onpointermove = (e) => {
+        if (count == e.pointerId + 1) {
+          context.lineTo(e.x, e.y);
+        }
+        context.stroke();
+      };
+
+      document.onpointerup = () => (count = 0);
+    </script>
+  </body>
+</html>
