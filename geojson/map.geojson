@@ -1,0 +1,13 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [15.287959403425132, 37.075405380167226]
+      },
+      "properties": { "name": "Sicily" }
+    }
+  ]
+}
