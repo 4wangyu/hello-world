@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>colovaria</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        background: #fff;
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        font-size: 14px;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: 1fr 10fr;
+      }
+
+      body > div {
+        border: 1px solid #000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      img {
+        max-width: 100%;
+        max-height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <input
+        id="input"
+        type="file"
+        accept="image/png, image/jpeg"
+        onchange="handlePreview()"
+      />
+    </div>
+    <div><button onclick="handleMagic()">Colovaria</button></div>
+    <div><img id="uploadPreview" /></div>
+    <div id="magic"><canvas></canvas></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.0/color-thief.umd.js"></script>
+    <script>
+      function handlePreview() {
+        console.log('handlePreview');
+        const selectedFile = document.getElementById('input').files[0];
+        console.log(selectedFile);
+        const oFReader = new FileReader();
+        oFReader.readAsDataURL(selectedFile);
+        oFReader.onload = function (oFREvent) {
+          document.getElementById('uploadPreview').src = oFREvent.target.result;
+        };
+      }
+
+      function handleMagic() {
+        const fileList = document.getElementById('input').files;
+        if (!fileList.length) {
+          alert('Please select an image!');
+          return;
+        }
+        const img = document.getElementById('uploadPreview');
+        const colorThief = new ColorThief();
+        const colors = colorThief.getColor(img);
+        console.log(`rgb(${colors.join()})`);
+
+        const magicDiv = document.getElementById('magic');
+        const minDivLength = Math.min(
+          magicDiv.clientHeight,
+          magicDiv.clientWidth
+        );
+        const canvas = magicDiv.querySelector('canvas');
+        canvas.width = canvas.height = minDivLength;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = `rgb(${colors.join()})`;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        const maxImgLength = Math.max(img.width, img.height);
+        const scaleDownRatio = maxImgLength / (minDivLength * 0.9);
+        const scaledImgWidth = img.width / scaleDownRatio;
+        const scaledImgHeight = img.height / scaleDownRatio;
+
+        const xOffset = (minDivLength - scaledImgWidth) / 2;
+        const yOffset = (minDivLength - scaledImgHeight) / 2;
+
+        ctx.drawImage(img, xOffset, yOffset, scaledImgWidth, scaledImgHeight);
+      }
+    </script>
+  </body>
+</html>
