@@ -54,9 +54,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.0/color-thief.umd.js"></script>
     <script>
       function handlePreview() {
-        console.log('handlePreview');
         const selectedFile = document.getElementById('input').files[0];
-        console.log(selectedFile);
         const oFReader = new FileReader();
         oFReader.readAsDataURL(selectedFile);
         oFReader.onload = function (oFREvent) {
@@ -73,7 +71,6 @@
         const img = document.getElementById('uploadPreview');
         const colorThief = new ColorThief();
         const colors = colorThief.getColor(img);
-        console.log(`rgb(${colors.join()})`);
 
         const magicDiv = document.getElementById('magic');
         const minDivLength = Math.min(
