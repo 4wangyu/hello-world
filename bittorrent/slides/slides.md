@@ -21,48 +21,68 @@ drawings:
   persist: false
 ---
 
-# Welcome to Slidev
+# BitTorrent
 
-Presentation slides for developers
+Brief intro and how to write a simple client
 
-<div class="pt-12">
-  <span @click="$slidev.nav.next" class="px-2 py-1 rounded cursor-pointer" hover="bg-white bg-opacity-10">
-    Press Space for next page <carbon:arrow-right class="inline"/>
-  </span>
-</div>
+---
 
-<div class="abs-br m-6 flex gap-2">
-  <button @click="$slidev.nav.openInEditor()" title="Open in Editor" class="text-xl icon-btn opacity-50 !border-none !hover:text-white">
-    <carbon:edit />
-  </button>
-  <a href="https://github.com/slidevjs/slidev" target="_blank" alt="GitHub"
-    class="text-xl icon-btn opacity-50 !border-none !hover:text-white">
-    <carbon-logo-github />
-  </a>
-</div>
+# What is BitTorrent?
+
+Wikipedia: BitTorrent is a communication protocol for peer-to-peer file sharing (P2P), which enables users to distribute data and electronic files over the Internet in a decentralized manner.
+
+<img src="/arch.png" class="h-90" />
 
 <!--
-The last comment block of each slide will be treated as slide notes. It will be visible and editable in Presenter Mode along with the slide. [Read more in the docs](https://sli.dev/guide/syntax.html#notes)
+1. download torrent file
+Torrent file contains information about the
+file, its length, name, and hashing information, and
+the url of a tracker.
+
+2. ask tracker for peers
+Trackers are responsible for helping downloaders find each other.  They speak a very
+simple protocol layered on top of HTTP in which
+a downloader sends information about what file it’s
+downloading, what port it’s listening on, and similar
+information, and the tracker responds with a list of
+contact information for peers which are downloading
+the same file.
+
+3. contacting peers to download file
+In order to keep track of which peers have what,
+BitTorrent cuts files into pieces of fixed size, typically a quarter megabyte. Each downloader reports
+to all of its peers what pieces it has.
+To verify data integrity, the SHA1 hashes of all the pieces are included in the .torrent file, and peers don’t report that they have a piece until they’ve checked the hash.
+
+Although the tracker only helps peers to find each other and its traffic is so low that it can never be the bottleneck of the system. It still doesn't feel so distributed with such a centralised server that is so crucial. New methods cut out the middleman by making even peer discovery a distributed process. We won’t be talking about them, but if you’re interested, some terms you can research are DHT, magnet links and so on.
+
+With the traditional client-server file download, all upload cost is placed on the hosting machine. With BitTorrent, when multiple people are downloading the same file at the same time, they upload pieces of the file
+to each other. This redistributes the cost of upload
+to downloaders.
 -->
 
 ---
 
-# What is Slidev?
+# Roles
 
-Slidev is a slides maker and presenter designed for developers, consist of the following features
 
-- 📝 **Text-based** - focus on the content with Markdown, and then style them later
-- 🎨 **Themable** - theme can be shared and used with npm packages
-- 🧑‍💻 **Developer Friendly** - code highlighting, live coding with autocompletion
-- 🤹 **Interactive** - embedding Vue components to enhance your expressions
-- 🎥 **Recording** - built-in recording and camera view
-- 📤 **Portable** - export into PDF, PNGs, or even a hostable SPA
-- 🛠 **Hackable** - anything possible on a webpage
+
+-  **Torrent file** -  a metadata file that contains info about the file and the url of a tracker.
+-  **Tracker** - a server that helps downloaders/peers find each other.
+-  **Peer/Downloader** - clients that wants to download file.
+-  **Seeder** - peers who have the complete file and are sharing it.
+-  **Leecher** - the selfish peers who are downloading the files but not uploading.
 
 <br>
 <br>
+<br>
+<br>
 
-Read more about [Why Slidev?](https://sli.dev/guide/why)
+<v-click>
+
+> It is a love based of giving and receiving as well as having and sharing. And the love that they give and have is shared and received. And through this having and giving and sharing and receiving, we too can share and love and have... and receive.  - Joey Tribbiani 
+
+</v-click>
 
 <!--
 You can have `style` tag in markdown to override the style for the current page.
@@ -83,295 +103,150 @@ h1 {
 
 ---
 
-# Navigation
+# Selected torrent sites
 
-Hover on the bottom-left corner to see the navigation's controls panel, [learn more](https://sli.dev/guide/navigation.html)
-
-### Keyboard Shortcuts
-
-|     |     |
+| Name |  URL   |
 | --- | --- |
-| <kbd>right</kbd> / <kbd>space</kbd>| next animation or slide |
-| <kbd>left</kbd>  / <kbd>shift</kbd><kbd>space</kbd> | previous animation or slide |
-| <kbd>up</kbd> | previous slide |
-| <kbd>down</kbd> | next slide |
+| 1337x | https://www.1377x.to/ |
+| rarbg | https://rarbg.to/ |
+| thepiratebay | https://thepiratebay.org/ |
+| btdig | https://btdig.com/ |
+| debian | https://cdimage.debian.org/debian-cd/current/amd64/bt-cd/ |
 
 <!-- https://sli.dev/guide/animations.html#click-animations -->
-<img
-  v-click
-  class="absolute -bottom-9 -left-7 w-80 opacity-50"
-  src="https://sli.dev/assets/arrow-bottom-left.svg"
-/>
-<p v-after class="absolute bottom-23 left-45 opacity-30 transform -rotate-10">Here!</p>
 
 ---
-layout: image-right
-image: https://source.unsplash.com/collection/94734566/1920x1080
+
+# Inside a torrent file
+
+
+```js {all|2|7|9-18|all}
+d
+  8:announce
+    41:http://bttracker.debian.org:6969/announce
+  7:comment
+    35:"Debian CD from cdimage.debian.org"
+  13:creation date
+    i1573903810e
+  4:info
+    d
+      6:length
+        i351272960e
+      4:name
+        31:debian-10.2.0-amd64-netinst.iso
+      12:piece length
+        i262144e
+      6:pieces
+        26800:�����PS�^�� (binary blob of the hashes of each piece)
+    e
+e
+```
+
+
+[Parser lib](https://github.com/jackpal/bencode-go)
+
+
+<!--
+Strings come with a length prefix, and look like 4:spam. 
+
+Integers go between start and end markers, so 7 would encode to i7e. 
+
+Lists and dictionaries work in a similar way: l4:spami7ee represents ['spam', 7], while d4:spami7ee means {spam: 7}.
+-->
+
 ---
 
-# Code
+# Calling tracker
 
-Use code snippets and get the highlighting directly![^1]
-
-```ts {all|2|1-6|9|all}
-interface User {
-  id: number
-  firstName: string
-  lastName: string
-  role: string
-}
-
-function updateUser(id: number, update: User) {
-  const user = getUser(id)
-  const newUser = { ...user, ...update }
-  saveUser(id, newUser)
+Request:
+```go
+func (t *TorrentFile) buildTrackerURL(peerID [20]byte, port uint16) (string, error) {
+    base, err := url.Parse(t.Announce)
+    if err != nil {
+        return "", err
+    }
+    params := url.Values{
+        "info_hash":  []string{string(t.InfoHash[:])},
+        "peer_id":    []string{string(peerID[:])},
+        "port":       []string{strconv.Itoa(int(Port))},
+        "uploaded":   []string{"0"},
+        "downloaded": []string{"0"},
+        "compact":    []string{"1"},
+        "left":       []string{strconv.Itoa(t.Length)},
+    }
+    base.RawQuery = params.Encode()
+    return base.String(), nil
 }
 ```
 
-<arrow v-click="3" x1="400" y1="420" x2="230" y2="330" color="#564" width="3" arrowSize="1" />
+<!--
+Just a get request
 
-[^1]: [Learn More](https://sli.dev/guide/syntax.html#line-highlighting)
+info_hash: Identifies the file we’re trying to download. It’s the infohash we calculated earlier from the bencoded info dict. The tracker will use this to figure out which peers to show us.
 
-<style>
-.footnotes-sep {
-  @apply mt-20 opacity-10;
-}
-.footnotes {
-  @apply text-sm opacity-75;
-}
-.footnote-backref {
-  display: none;
-}
-</style>
+peer_id: A 20 byte name to identify ourselves to trackers and peers. We’ll just generate 20 random bytes for this.
+-->
 
 ---
 
-# Components
+# Calling tracker
 
-<div grid="~ cols-2 gap-4">
-<div>
-
-You can use Vue components directly inside your slides.
-
-We have provided a few built-in components like `<Tweet/>` and `<Youtube/>` that you can use directly. And adding your custom components is also super easy.
-
-```html
-<Counter :count="10" />
+Response:
+```js
+d
+  8:interval
+    i900e
+  5:peers
+    252:another long binary blob
+e
 ```
 
-<!-- ./components/Counter.vue -->
-<Counter :count="10" m="t-4" />
+<br>
 
-Check out [the guides](https://sli.dev/builtin/components.html) for more.
+<img src="/address.png" class="h-60" />
 
-</div>
-<div>
+<!--
+Interval tells us how often we’re supposed to connect to the tracker again to refresh our list of peers. A value of 900 means we should reconnect every 15 minutes (900 seconds).
 
-```html
-<Tweet id="1390115482657726468" />
-```
-
-<Tweet id="1390115482657726468" scale="0.65" />
-
-</div>
-</div>
-
+Peers is another long binary blob containing the IP addresses of each peer. It’s made out of groups of six bytes. The first four bytes in each group represent the peer’s IP address—each byte represents a number in the IP. The last two bytes represent the port
+-->
 
 ---
-class: px-20
----
 
-# Themes
+# Calling peers
 
-Slidev comes with powerful theming support. Themes can provide styles, layouts, components, or even configurations for tools. Switching between themes by just **one edit** in your frontmatter:
-
-<div grid="~ cols-2 gap-2" m="-t-2">
-
-```yaml
----
-theme: default
----
-```
-
-```yaml
----
-theme: seriph
----
-```
-
-<img border="rounded" src="https://github.com/slidevjs/themes/blob/main/screenshots/theme-default/01.png?raw=true">
-
-<img border="rounded" src="https://github.com/slidevjs/themes/blob/main/screenshots/theme-seriph/01.png?raw=true">
-
-</div>
-
-Read more about [How to use a theme](https://sli.dev/themes/use.html) and
-check out the [Awesome Themes Gallery](https://sli.dev/themes/gallery.html).
+<img src="/flow.png" class="h-100" />
 
 ---
 preload: false
 ---
 
-# Animations
+# Bitfields
 
-Animations are powered by [@vueuse/motion](https://motion.vueuse.org/).
-
-```html
-<div
-  v-motion
-  :initial="{ x: -80 }"
-  :enter="{ x: 0 }">
-  Slidev
-</div>
-```
-
-<div class="w-60 relative mt-6">
-  <div class="relative w-40 h-40">
-    <img
-      v-motion
-      :initial="{ x: 800, y: -100, scale: 1.5, rotate: -50 }"
-      :enter="final"
-      class="absolute top-0 left-0 right-0 bottom-0"
-      src="https://sli.dev/logo-square.png"
-    />
-    <img
-      v-motion
-      :initial="{ y: 500, x: -100, scale: 2 }"
-      :enter="final"
-      class="absolute top-0 left-0 right-0 bottom-0"
-      src="https://sli.dev/logo-circle.png"
-    />
-    <img
-      v-motion
-      :initial="{ x: 600, y: 400, scale: 2, rotate: 100 }"
-      :enter="final"
-      class="absolute top-0 left-0 right-0 bottom-0"
-      src="https://sli.dev/logo-triangle.png"
-    />
-  </div>
-
-  <div
-    class="text-5xl absolute top-14 left-40 text-[#2B90B6] -z-1"
-    v-motion
-    :initial="{ x: -80, opacity: 0}"
-    :enter="{ x: 0, opacity: 1, transition: { delay: 2000, duration: 1000 } }">
-    Slidev
-  </div>
-</div>
-
-<!-- vue script setup scripts can be directly used in markdown, and will only affects current page -->
-<script setup lang="ts">
-const final = {
-  x: 0,
-  y: 0,
-  rotate: 0,
-  scale: 1,
-  transition: {
-    type: 'spring',
-    damping: 10,
-    stiffness: 20,
-    mass: 2
-  }
-}
-</script>
-
-<div
-  v-motion
-  :initial="{ x:35, y: 40, opacity: 0}"
-  :enter="{ y: 0, opacity: 1, transition: { delay: 3500 } }">
-
-[Learn More](https://sli.dev/guide/animations.html#motion)
-
-</div>
+<img src="/bitfield.png" class="h-80" />
 
 ---
 
-# LaTeX
+# Bitfields
 
-LaTeX is supported out-of-box powered by [KaTeX](https://katex.org/).
+```go
+// A Bitfield represents the pieces that a peer has
+type Bitfield []byte
 
-<br>
+// HasPiece tells if a bitfield has a particular index set
+func (bf Bitfield) HasPiece(index int) bool {
+    byteIndex := index / 8
+    offset := index % 8
+    return bf[byteIndex]>>(7-offset)&1 != 0
+}
 
-Inline $\sqrt{3x-1}+(1+x)^2$
-
-Block
-$$
-\begin{array}{c}
-
-\nabla \times \vec{\mathbf{B}} -\, \frac1c\, \frac{\partial\vec{\mathbf{E}}}{\partial t} &
-= \frac{4\pi}{c}\vec{\mathbf{j}}    \nabla \cdot \vec{\mathbf{E}} & = 4 \pi \rho \\
-
-\nabla \times \vec{\mathbf{E}}\, +\, \frac1c\, \frac{\partial\vec{\mathbf{B}}}{\partial t} & = \vec{\mathbf{0}} \\
-
-\nabla \cdot \vec{\mathbf{B}} & = 0
-
-\end{array}
-$$
-
-<br>
-
-[Learn more](https://sli.dev/guide/syntax#latex)
-
----
-
-# Diagrams
-
-You can create diagrams / graphs from textual descriptions, directly in your Markdown.
-
-<div class="grid grid-cols-3 gap-10 pt-4 -mb-6">
-
-```mermaid {scale: 0.5}
-sequenceDiagram
-    Alice->John: Hello John, how are you?
-    Note over Alice,John: A typical interaction
+// SetPiece sets a bit in the bitfield
+func (bf Bitfield) SetPiece(index int) {
+    byteIndex := index / 8
+    offset := index % 8
+    bf[byteIndex] |= 1 << (7 - offset)
+}
 ```
-
-```mermaid {theme: 'neutral', scale: 0.8}
-graph TD
-B[Text] --> C{Decision}
-C -->|One| D[Result 1]
-C -->|Two| E[Result 2]
-```
-
-```plantuml {scale: 0.7}
-@startuml
-
-package "Some Group" {
-  HTTP - [First Component]
-  [Another Component]
-}
-
-node "Other Groups" {
-  FTP - [Second Component]
-  [First Component] --> FTP
-}
-
-cloud {
-  [Example 1]
-}
-
-
-database "MySql" {
-  folder "This is my folder" {
-    [Folder 3]
-  }
-  frame "Foo" {
-    [Frame 4]
-  }
-}
-
-
-[Another Component] --> [Example 1]
-[Example 1] --> [Folder 3]
-[Folder 3] --> [Frame 4]
-
-@enduml
-```
-
-</div>
-
-[Learn More](https://sli.dev/guide/syntax.html#diagrams)
-
 
 ---
 layout: center
@@ -380,4 +255,4 @@ class: text-center
 
 # Learn More
 
-[Documentations](https://sli.dev) · [GitHub](https://github.com/slidevjs/slidev) · [Showcases](https://sli.dev/showcases.html)
+[Blog](https://blog.jse.li/posts/torrent/) · [GitHub](https://github.com/veggiedefender/torrent-client) · [Paper](https://www.bittorrent.org/bittorrentecon.pdf)
