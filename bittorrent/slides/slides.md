@@ -223,7 +223,11 @@ preload: false
 
 # Bitfields
 
-<img src="/bitfield.png" class="h-80" />
+<img src="/bitfield_byte.png" class="h-100" />
+
+<!--
+By working with bits instead of bytes, this data structure is super compact. We can stuff information about eight pieces in the space of a single byte—the size of a bool. The tradeoff is that accessing values becomes a little more tricky. The smallest unit of memory that computers can address are bytes, so to get to our bits, we have to do some bitwise manipulation.
+-->
 
 ---
 
@@ -247,6 +251,21 @@ func (bf Bitfield) SetPiece(index int) {
     bf[byteIndex] |= 1 << (7 - offset)
 }
 ```
+---
+
+# Bitfields
+
+Bitwise And
+
+<img src="/bitwise_and.png" class="h-80" />
+
+---
+
+# Bitfields
+
+Bitwise Right Shift
+
+<img src="/bitwise_right_shift.png" class="h-100" />
 
 ---
 layout: center
