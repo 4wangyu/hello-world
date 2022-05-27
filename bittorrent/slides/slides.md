@@ -203,7 +203,7 @@ e
 
 <br>
 
-<img src="/address.png" class="h-60" />
+<img src="/address.png" class="h-50" />
 
 <!--
 Interval tells us how often we’re supposed to connect to the tracker again to refresh our list of peers. A value of 900 means we should reconnect every 15 minutes (900 seconds).
@@ -265,7 +265,7 @@ Bitwise And
 
 Bitwise Right Shift
 
-<img src="/bitwise_right_shift.png" class="h-100" />
+<img src="/bitwise_right_shift.png" class="h-90" />
 
 ---
 layout: center
